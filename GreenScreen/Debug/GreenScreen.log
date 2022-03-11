@@ -1,0 +1,3 @@
+﻿  GreenScreen.cpp
+C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(11,22): warning C4305: "inicjowanie": obcięcie z "double" do "float"
+opencv_world420d.dll : fatal error LNK1107: nieprawidłowy lub uszkodzony plik: nie można odczytać z pozycji 0x3F0
