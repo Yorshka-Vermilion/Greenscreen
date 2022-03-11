@@ -8,10 +8,20 @@ using namespace std;
 
 int main()
 {
-	Mat image = Mat::zeros(300, 600, CV_8UC3);
-	circle(image, Point(250, 150), 100, Scalar(0, 255, 128), -100);
-	circle(image, Point(350, 150), 100, Scalar(255, 255, 255), -100);
-	imshow("Display Window", image);
-	waitKey(0);
+	VideoCapture kamerka = VideoCapture(0);
+	if (kamerka.isOpened()) {
+		while (1) {
+			Mat frame;
+			kamerka >> frame;
+			imshow("Frame", frame);
+
+			char c = (char)waitKey(25);
+			if (c == 27)
+				break;
+		}
+	}
+	else {
+		cout << "Nie udało się połączyć z kamerką !" << endl;
+	}
 	return 0;
 }
