@@ -83,8 +83,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+<<<<<<< Updated upstream
     <IncludePath>C:\Biblioteki\opencv\build\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>C:\Biblioteki\opencv\build\x64\vc15\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+=======
+    <IncludePath>S:\Biblioteki\glfw\glfw-3.3.6\include;D:\opencv\build\include;S:\Biblioteki\glew-2.1.0\include;S:\Biblioteki\freeglut\include;$(IncludePath)</IncludePath>
+    <LibraryPath>s:\Biblioteki\glfw\src\Release;s:\Biblioteki\glew-2.1.0\lib;s:\Biblioteki\freeglut\lib\x64;D:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+>>>>>>> Stashed changes
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,11 +146,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+<<<<<<< Updated upstream
       <AdditionalDependencies>opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
+      <AdditionalDependencies>opencv_world420.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> Stashed changes
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GreenScreen.cpp" />
+    <ClCompile Include="ShaderUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ShaderUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
