@@ -78,13 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Biblioteki\opencv\build\include;C:\Biblioteki\glfw-3.3.6\include;C:\Biblioteki\glew-2.1.0\include;C:\Biblioteki\freeglut\include;D:\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Biblioteki\opencv\build\x64\vc15\lib;C:\Biblioteki\glfw-3.3.6\glfw-3.3.6.bin.WIN64\lib-vc2019;C:\Biblioteki\freeglut\lib;C:\Biblioteki\glew-2.1.0\lib;D:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>S:\Biblioteki\glfw\glfw-3.3.6\include;D:\opencv\build\include;S:\Biblioteki\glew-2.1.0\include;S:\Biblioteki\freeglut\include;$(IncludePath)</IncludePath>
-    <LibraryPath>s:\Biblioteki\glfw\src\Release;s:\Biblioteki\glew-2.1.0\lib;s:\Biblioteki\freeglut\lib\x64;D:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Biblioteki\opencv\build\include;C:\Biblioteki\glfw-3.3.6\include;C:\Biblioteki\glew-2.1.0\include;C:\Biblioteki\freeglut\include;S:\Biblioteki\glfw\glfw-3.3.6\include;D:\opencv\build\include;S:\Biblioteki\glew-2.1.0\include;S:\Biblioteki\freeglut\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Biblioteki\opencv\build\x64\vc15\lib;C:\Biblioteki\glfw-3.3.6\glfw-3.3.6.bin.WIN64\lib-vc2019;C:\Biblioteki\freeglut\lib;C:\Biblioteki\glew-2.1.0\lib;s:\Biblioteki\glfw\src\Release;s:\Biblioteki\glew-2.1.0\lib;s:\Biblioteki\freeglut\lib\x64;D:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,7 +124,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world420d.lib;opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,7 +141,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world420.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world420d.lib;opencv_world420.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderUtil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="greenscreen.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
