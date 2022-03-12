@@ -1,6 +1,4 @@
 
 GreenScreen/opencv_world420d.dll
 x64/Debug/opencv_world420d.dll
-.vs/GreenScreen/v16/ipch/AutoPCH/288df7a88803749a/GREENSCREEN.ipch
-.vs/GreenScreen/v16/ipch/AutoPCH/a7c5575bd8cea13/GREENSCREEN.ipch
-GreenScreen/x64/Debug/opencv_world420d.dll
+GreenScreen.sln

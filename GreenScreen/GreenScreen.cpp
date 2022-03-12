@@ -1,5 +1,4 @@
-﻿
-#include <GL/glew.h>
+﻿#include <GL/glew.h>
 #include <gl/glut.h>
 #include <GL/GL.h>
 #include <GL/freeglut.h>
