@@ -1,39 +1,5 @@
 ﻿  GreenScreen.cpp
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(32,27): warning C4305: "inicjowanie": obcięcie z "double" do "float"
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(71,30): warning C4244: "argument": konwersja z "int" do "_Tp", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(71,27): warning C4244: "argument": konwersja z "int" do "_Tp", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(71,24): warning C4244: "argument": konwersja z "int" do "_Tp", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(83,31): warning C4244: "argument": konwersja z "double" do "_Tp", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(83,25): warning C4244: "argument": konwersja z "double" do "_Tp", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(243,39): warning C4244: "argument": konwersja z "_Tp" do "GLint", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-C:\Users\Drq\Documents\Greenscreen\GreenScreen\GreenScreen.cpp(243,32): warning C4244: "argument": konwersja z "_Tp" do "GLint", możliwa utrata danych
-          with
-          [
-              _Tp=float
-          ]
-LINK : warning LNK4098: domyślna biblioteka "MSVCRT" powoduje konflikt z innymi bibliotekami; użyj opcji /NODEFAULTLIB:biblioteka
-  GreenScreen.vcxproj -> C:\Users\Drq\Documents\Greenscreen\x64\Debug\GreenScreen.exe
+S:\Polibuda\S7\ZPO\Greenscreen\GreenScreen\GreenScreen.cpp(2,10): fatal error C1083: Nie można otworzyć pliku dołącz: 'GL/glew.h': No such file or directory
+  ShaderUtil.cpp
+S:\Polibuda\S7\ZPO\Greenscreen\GreenScreen\ShaderUtil.cpp(3,10): fatal error C1083: Nie można otworzyć pliku dołącz: 'GL/glew.h': No such file or directory
+  Generowanie kodu...
