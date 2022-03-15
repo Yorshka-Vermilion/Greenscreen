@@ -23,15 +23,15 @@ using namespace cv;
 using namespace std;
 
 typedef struct {
-	float r;       // a fraction between 0 and 1
-	float g;       // a fraction between 0 and 1
-	float b;       // a fraction between 0 and 1
+	float r;       // 0 to 1
+	float g;       // 0 to 1
+	float b;       // 0 to 1
 } rgb;
 
 typedef struct {
 	float h;       // angle in degrees
-	float s;       // a fraction between 0 and 1
-	float v;       // a fraction between 0 and 1
+	float s;       // 0 to 1
+	float v;       // 0 to 1
 } hsv;
 
 static const float Stala = 1.0f / 255.0f;
@@ -47,7 +47,7 @@ Vec3f l_colorToDelete, h_colorToDelete;
 
 
 Vec2f mousePosition;
-int screen = 1, shader = 0;
+int shader = 0;
 static int nextImg = 0;
 ShaderUtil shaderUtil;
 unsigned char* buff = new unsigned char[1228800];
@@ -68,12 +68,12 @@ static hsv rgb2hsv(rgb in)
 	max = in.r > in.g ? in.r : in.g;
 	max = max > in.b ? max : in.b;
 
-	out.v = max;                                // v
+	out.v = max;
 	delta = max - min;
 	if (delta < 0.00001)
 	{
 		out.s = 0;
-		out.h = 0; // undefined, maybe nan?
+		out.h = 0;
 		return out;
 	}
 	if (max > 0.0) { // NOTE: if Max is == 0, this divide would cause a crash
@@ -171,10 +171,34 @@ void calculateColor() {
 void GreenScreenOn() {
 	shaderUtil.Load("greenscreen.frag");
 	shaderUtil.Use();
+	glUniform2f(glGetUniformLocation(shaderUtil.mProgramId, "resolution"), sizee.width, sizee.height);
 	glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "tex"), 0);
 	glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "img"), 1);
 	glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "low"), l_colorToDelete[0], l_colorToDelete[1], l_colorToDelete[2]);
 	glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "high"), h_colorToDelete[0], h_colorToDelete[1], h_colorToDelete[2]);
+}
+
+void printColor() {
+	rgb tmpRgb;
+	tmpRgb.r = colorToDelete.val[0];
+	tmpRgb.g = colorToDelete.val[1];
+	tmpRgb.b = colorToDelete.val[2];
+	hsv tmpHsv = rgb2hsv(tmpRgb);
+	cout << "H: " << tmpHsv.h << " S: " << tmpHsv.s << " V: " << tmpHsv.v << " Prog: " << colorThreshold << "\t\r" << flush;
+}
+
+void printInfo() {
+	system("cls");
+	cout << "STEROWANIE:" << endl;
+	cout << "LPM - Przycisniecie - Probkowanie koloru" << endl;
+	cout << "PPM - Przycisniecie / Puszczenie - Wybor pozycji prostokata obcinajacego obraz w tle" << endl;
+	cout << "E - Przycisniecie - Wlaczenie/Wylaczenie Greenscreena" << endl;
+	cout << "S/D - Przytrzymanie - Zwiekszenie/Zmniejszenie wartosci saturacji" << endl;
+	cout << "V/B - Przytrzymanie - Zwiekszenie/Zmniejszenie wartosci koloru" << endl;
+	cout << "+/- - Przytrzymanie - Zwiekszenie/Zmniejszenie progu wybranego koloru" << endl;
+	cout << "LEWA/PRAWA STRZALKA - Zmiana obrazu w tle" << endl;
+	cout << "Obecnie kluczowany kolor w przestrzeni HSV oraz prog: " << endl;
+	printColor();
 }
 
 void usrednij(unsigned char* buff) {
@@ -208,14 +232,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		glUniform2f(glGetUniformLocation(shaderUtil.mProgramId, "start"), xpos, ypos);
-		cout << "Mouse start " << xpos << " " << ypos << endl;
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
 	{
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		glUniform2f(glGetUniformLocation(shaderUtil.mProgramId, "end"), xpos, ypos);
-		cout << "Mouse end " << xpos << " " << ypos << endl;
 	}
 }
 
@@ -226,8 +248,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			GreenScreenOn();
 			shader = 1;
 			glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "shader"), shader);
-			screen = 1;
-			glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "screen"), screen);
+			glUniform2f(glGetUniformLocation(shaderUtil.mProgramId, "start"), 0, 0);
+			glUniform2f(glGetUniformLocation(shaderUtil.mProgramId, "end"), 0, 0);
 		}
 		else {
 			shader = 0;
@@ -235,7 +257,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 		}
 	}
-	if (key == GLFW_KEY_S && action == GLFW_REPEAT) {
+	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
 		rgb tmpRGB;
 		tmpRGB.r = colorToDelete.val[0];
 		tmpRGB.g = colorToDelete.val[1];
@@ -254,7 +276,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "low"), l_colorToDelete[0], l_colorToDelete[1], l_colorToDelete[2]);
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "high"), h_colorToDelete[0], h_colorToDelete[1], h_colorToDelete[2]);
 	}
-	if (key == GLFW_KEY_D && action == GLFW_REPEAT) {
+	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
 		rgb tmpRGB;
 		tmpRGB.r = colorToDelete.val[0];
 		tmpRGB.g = colorToDelete.val[1];
@@ -272,17 +294,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "low"), l_colorToDelete[0], l_colorToDelete[1], l_colorToDelete[2]);
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "high"), h_colorToDelete[0], h_colorToDelete[1], h_colorToDelete[2]);
 	}
-	if (key == GLFW_KEY_V && action == GLFW_REPEAT) {
+	if (key == GLFW_KEY_V && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
 		rgb tmpRGB;
 		tmpRGB.r = colorToDelete.val[0];
 		tmpRGB.g = colorToDelete.val[1];
 		tmpRGB.b = colorToDelete.val[2];
 		hsv tmp = rgb2hsv(tmpRGB);
-		if (tmp.v + Stala * 10.0f > 255.0f) {
+		if (tmp.v + Stala * 100.0f > 255.0f) {
 			return;
 		}
 		else {
-			tmp.v += Stala * 10.0f;
+			tmp.v += Stala * 100.0f;
 		}
 
 		tmpRGB = hsv2rgb(tmp);
@@ -291,17 +313,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "low"), l_colorToDelete[0], l_colorToDelete[1], l_colorToDelete[2]);
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "high"), h_colorToDelete[0], h_colorToDelete[1], h_colorToDelete[2]);
 	}
-	if (key == GLFW_KEY_B && action == GLFW_REPEAT) {
+	if (key == GLFW_KEY_B && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
 		rgb tmpRGB;
 		tmpRGB.r = colorToDelete.val[0];
 		tmpRGB.g = colorToDelete.val[1];
 		tmpRGB.b = colorToDelete.val[2];
 		hsv tmp = rgb2hsv(tmpRGB);
-		if (tmp.v - Stala * 10.0f < 0.0f) {
+		if (tmp.v - Stala * 100.0f < 0.0f) {
 			return;
 		}
 		else {
-			tmp.v -= Stala * 10.0f;
+			tmp.v -= Stala * 100.0f;
 		}
 		tmpRGB = hsv2rgb(tmp);
 		colorToDelete = Vec3f(tmpRGB.r, tmpRGB.g, tmpRGB.b);
@@ -309,7 +331,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "low"), l_colorToDelete[0], l_colorToDelete[1], l_colorToDelete[2]);
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "high"), h_colorToDelete[0], h_colorToDelete[1], h_colorToDelete[2]);
 	}
-	if (key == GLFW_KEY_KP_ADD && action == GLFW_REPEAT) {
+	if (key == GLFW_KEY_KP_ADD && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
 		if (colorThreshold + 0.001 > 1.0f) {
 			return;
 		}
@@ -318,7 +340,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "low"), l_colorToDelete[0], l_colorToDelete[1], l_colorToDelete[2]);
 		glUniform3f(glGetUniformLocation(shaderUtil.mProgramId, "high"), h_colorToDelete[0], h_colorToDelete[1], h_colorToDelete[2]);
 	}
-	if (key == GLFW_KEY_KP_SUBTRACT && action == GLFW_REPEAT) {
+	if (key == GLFW_KEY_KP_SUBTRACT && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
 		if (colorThreshold - 0.001 < 0.0f) {
 			return;
 		}
@@ -339,20 +361,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 		nextImg++;
 	}
-	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-		if (screen == 0) {
-			screen = 1;
-			glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "screen"), screen);
-		}
-		else {
-			screen = 0;
-			glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "screen"), screen);
-
-		}
-		cout << "Screen " << screen << endl;
-	}
-
-	cout << "R " << colorToDelete.val[0] << " G " << colorToDelete.val[1] << " B " << colorToDelete.val[2] << " T " << colorThreshold << endl;
+	printColor();
 }
 
 void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
@@ -389,12 +398,38 @@ void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
 }
 
 int main() {
+	kamerka = VideoCapture(0);
+	if (kamerka.isOpened()) {
+		kamerka.set(CAP_PROP_FRAME_WIDTH, 1920);
+		kamerka.set(CAP_PROP_FRAME_HEIGHT, 1080);
+		int width = (int)kamerka.get(CAP_PROP_FRAME_WIDTH);
+		int height = (int)kamerka.get(CAP_PROP_FRAME_HEIGHT);
+		sizee = Size(width, height);
+		kamerka >> frame;
+		//obraz
+		images[0] = imread("dd.jpg", IMREAD_COLOR);
+		flip(images[0], images[0], 0);
+		//film
+		film = VideoCapture(0);
+		film.open("film.mp4");
+		film >> images[1];
+
+		for (int i = 0; i < texNum - 1; i++) {
+			if (images[i].empty()) {
+				cout << "Nie można otworzyć podanego obrazlu tła - " << i << endl;
+				return -1;
+			}
+		}
+	}
+	else {
+		return -1;
+	}
 	GLFWwindow* window;
 
 	if (!glfwInit())
 		return -1;
 
-	window = glfwCreateWindow(640, 480, "Greenscreen", NULL, NULL);
+	window = glfwCreateWindow(sizee.width, sizee.height, "Greenscreen", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -410,40 +445,12 @@ int main() {
 	}
 	else
 	{
-		kamerka = VideoCapture(0);
-		if (kamerka.isOpened()) {
-			int width = (int)kamerka.get(CAP_PROP_FRAME_WIDTH);
-			int height = (int)kamerka.get(CAP_PROP_FRAME_HEIGHT);
-			sizee = Size(width, height);
-			kamerka >> frame;
-			//obraz
-			images[0] = imread("obraz.jpg", IMREAD_COLOR);
-			flip(images[0], images[0], 0);
-			//film
-			film = VideoCapture(0);
-			film.open("film.mp4");
-			film >> images[1];
-
-			for (int i = 0; i < texNum - 1; i++) {
-				if (images[i].empty()) {
-					cout << "Nie można otworzyć podanego obrazlu tła - " << i << endl;
-					return -1;
-				}
-			}
-		}
-		else {
-			cout << "Brak podpiętego urządzenia strumieniującego obraz!" << endl;
-			destroyAllWindows();
-			glfwTerminate();
-			return -1;
-		}
-
 		fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 		// :: TRYB ORTOGRAFICZNY :: 
 
 		glMatrixMode(GL_PROJECTION);
-		glOrtho(0, 640, 0, 480, 1, -1);
+		glOrtho(0, sizee.width, 0, sizee.height, 1, -1);
 		glMatrixMode(GL_MODELVIEW);
 
 		// :: BINDOWANIE TEKSTUR ::
@@ -460,20 +467,20 @@ int main() {
 		glActiveTexture(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+
+		
 		glActiveTexture(GL_TEXTURE0);
 		BindCVMat2GLTexture(images[1], textures[2]);
 		glActiveTexture(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-
-		glUniform1i(glGetUniformLocation(shaderUtil.mProgramId, "screen"), screen);
+		
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetKeyCallback(window, key_callback);
-
+		printInfo();
 
 		while (!glfwWindowShouldClose(window))
 		{
 			// :: CZYSZCZENIE BUFFORA ::
-
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -517,9 +524,6 @@ int main() {
 
 			glfwSwapBuffers(window);
 			glReadPixels(mousePosition[0], 480 - mousePosition[1], 3, 3, GL_RGB, GL_UNSIGNED_BYTE, buff);
-
-			//cout << mousePosition[0] << " " << mousePosition[1] << " k " << static_cast<int>(buff[0]) << " " << static_cast<int>(buff[1]) << " " << static_cast<int>(buff[2]) << endl;
-			//cout << mousePosition[0] << " " << mousePosition[1] << " k " << cos[0] << " " << cos[1] << " " << cos[2] << endl;
 			glfwPollEvents();
 		}
 		shaderUtil.Delete();
